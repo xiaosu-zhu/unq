@@ -85,12 +85,12 @@ class Trainer(nn.Module):
             self.writer.add_scalar(prefix + metric, metrics[metric].mean().item(), self.step)
         return metrics
 
-    def evaluate_recall(self, base, query, k=1, prefix='dev/', **kwargs):
+    def evaluate_recall(self, base, query, gt, k=1, prefix='dev/', **kwargs):
         """ Computes average recall @ k """
         with torch.no_grad(), training_mode(self.model, is_train=False):
-            reference_indices = self.SimilaritySearch(base, **kwargs).search(query, k=1)
+            # reference_indices = self.SimilaritySearch(base, **kwargs).search(query, k=1)
             predicted_indices = self.LearnedSimilaritySearch(base, **kwargs).search(query, k=k)
-            predicted_indices, reference_indices = map(check_numpy, (predicted_indices, reference_indices))
+            predicted_indices, reference_indices = map(check_numpy, (predicted_indices, gt))
             recall = np.equal(predicted_indices, reference_indices).any(-1).mean()
         self.writer.add_scalar('{}recall@{}'.format(prefix, k), recall, self.step)
         return recall

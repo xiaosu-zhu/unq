@@ -4,7 +4,7 @@ import warnings
 import numpy as np
 import torch
 import random
-from .utils import fvecs_read, download
+from .utils import fvecs_read, download, ivecs_read
 import os.path as osp
 
 
@@ -35,6 +35,7 @@ class Dataset:
         self.train_vectors = torch.as_tensor(data_dict['train_vectors'])
         self.test_vectors = torch.as_tensor(data_dict['test_vectors'])
         self.query_vectors = torch.as_tensor(data_dict['query_vectors'])
+        self.gt_vectors = torch.as_tensor(data_dict['gt_vectors'])
         assert self.train_vectors.shape[1] == self.test_vectors.shape[1] == self.query_vectors.shape[1]
         self.vector_dim = self.train_vectors.shape[1]
 
@@ -70,6 +71,7 @@ def fetch_BIGANN1M(path, train_size=None, test_size=None):
     base_path = osp.join(path, 'bigann_base1M.fvecs')
     learn_path = osp.join(path, 'bigann_learn500k.fvecs')
     query_path = osp.join(path, 'bigann_query10k.fvecs')
+    gt_path = osp.join(path, 'gt.ivecs')
     if not all(os.path.exists(fname) for fname in (base_path, learn_path, query_path)):
         os.makedirs(path, exist_ok=True)
         download("https://www.dropbox.com/s/zcnvsy7mlogj4g0/bigann_base1M.fvecs?dl=1", base_path,
@@ -80,7 +82,8 @@ def fetch_BIGANN1M(path, train_size=None, test_size=None):
     return dict(
         train_vectors=fvecs_read(learn_path)[:train_size],
         test_vectors=fvecs_read(base_path)[:test_size],
-        query_vectors=fvecs_read(query_path)
+        query_vectors=fvecs_read(query_path),
+        gt_vectors=ivecs_read(gt_path)[:, 0]
     )
 
 
