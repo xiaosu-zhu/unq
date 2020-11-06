@@ -50,9 +50,10 @@ class Dataset:
 
 
 def fetch_DEEP1M(path, train_size=5 * 10 ** 5, test_size=10 ** 6, ):
-    base_path = osp.join(path, 'deep_base1M.fvecs')
-    learn_path = osp.join(path, 'deep_learn500k.fvecs')
-    query_path = osp.join(path, 'deep_query10k.fvecs')
+    base_path = osp.join(path, 'base.npy')
+    learn_path = osp.join(path, 'train.npy')
+    query_path = osp.join(path, 'query.npy')
+    gt_path = osp.join(path, 'gt.npy')
     if not all(os.path.exists(fname) for fname in (base_path, learn_path, query_path)):
         os.makedirs(path, exist_ok=True)
         download("https://www.dropbox.com/s/e23sdc3twwn9syk/deep_base1M.fvecs?dl=1", base_path,
@@ -61,9 +62,10 @@ def fetch_DEEP1M(path, train_size=5 * 10 ** 5, test_size=10 ** 6, ):
                  chunk_size=4 * 1024 ** 2)
         download("https://www.dropbox.com/s/5z087cxqh61n144/deep_query10k.fvecs?dl=1", query_path)
     return dict(
-        train_vectors=fvecs_read(learn_path)[:train_size],
-        test_vectors=fvecs_read(base_path)[:test_size],
-        query_vectors=fvecs_read(query_path)
+        train_vectors=np.load(learn_path),
+        test_vectors=np.load(base_path),
+        query_vectors=np.load(query_path),
+        gt_vectors=np.load(gt_path)
     )
 
 

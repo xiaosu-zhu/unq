@@ -1,5 +1,6 @@
 .vscode/
 logs/
+data
 
 # node and NPM
 npm-debug.log
