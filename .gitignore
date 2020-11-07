@@ -1,6 +1,7 @@
 .vscode/
 logs/
 data
+checkpoints/
 
 # node and NPM
 npm-debug.log
