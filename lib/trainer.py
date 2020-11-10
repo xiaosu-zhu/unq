@@ -90,8 +90,8 @@ class Trainer(nn.Module):
         with torch.no_grad(), training_mode(self.model, is_train=False):
             # reference_indices = self.SimilaritySearch(base, **kwargs).search(query, k=1)
             predicted_indices = self.LearnedSimilaritySearch(base, **kwargs).search(query, k=k)
-            # if len(gt.shape) == 1:
-            #     gt = gt[:, None]
+            if len(gt.shape) == 1:
+                gt = gt[:, None]
             predicted_indices, reference_indices = map(check_numpy, (predicted_indices, gt))
             recall = np.equal(predicted_indices, reference_indices).any(-1).mean()
         self.writer.add_scalar('{}recall@{}'.format(prefix, k), recall, self.step)

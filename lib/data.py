@@ -68,6 +68,25 @@ def fetch_DEEP1M(path, train_size=5 * 10 ** 5, test_size=10 ** 6, ):
         gt_vectors=np.load(gt_path)
     )
 
+def fetch_labelme(path):
+    base_path = osp.join(path, 'base.npy')
+    learn_path = osp.join(path, 'train.npy')
+    query_path = osp.join(path, 'query.npy')
+    gt_path = osp.join(path, 'gt.npy')
+    if not all(os.path.exists(fname) for fname in (base_path, learn_path, query_path)):
+        os.makedirs(path, exist_ok=True)
+        download("https://www.dropbox.com/s/e23sdc3twwn9syk/deep_base1M.fvecs?dl=1", base_path,
+                 chunk_size=4 * 1024 ** 2)
+        download("https://www.dropbox.com/s/4i0c5o8jzvuloxy/deep_learn500k.fvecs?dl=1", learn_path,
+                 chunk_size=4 * 1024 ** 2)
+        download("https://www.dropbox.com/s/5z087cxqh61n144/deep_query10k.fvecs?dl=1", query_path)
+    return dict(
+        train_vectors=np.load(learn_path).astype(np.float32),
+        test_vectors=np.load(base_path).astype(np.float32),
+        query_vectors=np.load(query_path).astype(np.float32),
+        gt_vectors=np.load(gt_path)
+    )
+
 
 def fetch_BIGANN1M(path, train_size=None, test_size=None):
     base_path = osp.join(path, 'bigann_base1M.fvecs')
@@ -92,4 +111,5 @@ def fetch_BIGANN1M(path, train_size=None, test_size=None):
 DATASETS = {
     'DEEP1M': fetch_DEEP1M,
     'BIGANN1M': fetch_BIGANN1M,
+    "labelme": fetch_labelme
 }
